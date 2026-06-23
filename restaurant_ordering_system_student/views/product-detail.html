@@ -84,6 +84,22 @@
       </div>
     </div>
 
+    <!-- Feedback Action Buttons -->
+      <div class="card mt-4">
+        <div class="card-body">
+          <h5 class="card-title mb-3">Feedback Actions</h5>
+
+          <button id="createFeedbackBtn" class="btn btn-dark me-2">
+            Create Feedback
+          </button>
+
+          <button id="viewMyFeedbackBtn" class="btn btn-outline-dark">
+            Retrieve All My Feedback
+          </button>
+        </div>
+      </div>
+    </div>
+
   </main>
 
   <!-- Bootstrap JS -->
@@ -109,6 +125,15 @@
         errorMessage.textContent = 'No product specified.';
         return;
       }
+
+       // Button click events for create feedback and view all my feedback
+  document.getElementById('createFeedbackBtn').addEventListener('click', () => {
+    window.location.href = `/member/feedback/create?productId=${productId}`;
+  });
+
+  document.getElementById('viewMyFeedbackBtn').addEventListener('click', () => {
+    window.location.href = '/member/feedback';
+  });
 
       try {
         const response = await fetch(`/products/${productId}`);
@@ -147,6 +172,8 @@
       }
     }
   </script>
+
+  <!--<script src="/js/product-feedback.js"></script>-->
 
 </body>
 </html>

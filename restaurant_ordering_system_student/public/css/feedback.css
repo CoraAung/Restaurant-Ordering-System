@@ -1,0 +1,77 @@
+/* public/css/feedback.css */
+
+/* Main black-border feedback form box */
+.feedback-form-box {
+  border: 6px solid black;
+  box-shadow: 6px 6px 6px rgba(0, 0, 0, 0.25);
+  max-width: 780px;
+  margin: 0 auto;
+  padding: 24px 32px;
+  background-color: white;
+  align-items: flex-start !important;
+}
+
+/* Feedback form title */
+.feedback-form-title {
+  text-align: center;
+  margin-bottom: 24px;
+  font-weight: bold;
+}
+
+/* Labels inside the feedback form */
+.feedback-form-box label {
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+/* Product ID and Rating input height */
+.feedback-form-box .form-control {
+  height: 32px;
+  padding: 4px 8px;
+}
+
+/* Comment text box */
+.feedback-form-box textarea.form-control {
+  margin-top: 2px;
+  height: 52px;
+  resize: vertical;
+}
+
+/* Small Create button like assignment screenshot */
+.feedback-form-box .btn {
+  margin-top: 4px;
+}
+
+
+/* Feedback list page uses the same black box style as create/edit forms */
+.feedback-list-box {
+  max-width: 520px;
+}
+
+/* Each feedback record */
+.my-feedback-item {
+  border-bottom: 1px solid #333;
+  padding: 18px 0;
+}
+
+/* Remove bottom border from last feedback item */
+.my-feedback-item:last-child {
+  border-bottom: none;
+}
+
+/* Feedback ID title */
+.feedback-id-title {
+  font-weight: bold;
+  text-decoration: underline;
+  margin-bottom: 14px;
+}
+
+/* Reduce spacing between feedback details */
+.my-feedback-item p {
+  margin-bottom: 8px;
+}
+
+/* Star display */
+.feedback-stars {
+  letter-spacing: 2px;
+}
