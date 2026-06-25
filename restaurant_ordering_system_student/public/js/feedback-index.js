@@ -1,206 +1,127 @@
-// Run loadMyFeedback() after the HTML page has fully loaded.
-document.addEventListener('DOMContentLoaded', loadMyFeedback);
+document.addEventListener("DOMContentLoaded", function () {
+  loadFeedback();
 
-/*
-  Loads all feedback submitted by the logged-in customer.
+  const deleteFeedbackForm = document.getElementById("deleteFeedbackForm");
 
-  API route needed later:
-  GET /feedback
+  if (deleteFeedbackForm) {
+    deleteFeedbackForm.addEventListener("submit", submitDeleteFeedbackForm);
+  }
+});
 
-  Expected data from backend:
-  [
-    {
-      feedback_id: 3,
-      product_name: "Chili Crab",
-      rating: 5,
-      comment_text: "Yummy",
-      updated_at: "2026-01-01T11:20:01"
-    }
-  ]
-*/
-async function loadMyFeedback() {
-  const loadingMessage = document.getElementById('loading-message');
-  const emptyMessage = document.getElementById('empty-message');
-  const feedbackList = document.getElementById('feedbackList');
-  const feedbackCount = document.getElementById('feedback-count');
-  const errorMessage = document.getElementById('error-message');
+function loadFeedback() {
+  const feedbackList = document.getElementById("feedbackList");
+  const feedbackCount = document.getElementById("feedback-count");
+  const loadingMessage = document.getElementById("loading-message");
+  const emptyMessage = document.getElementById("empty-message");
+  const errorMessage = document.getElementById("error-message");
 
-  try {
-    const response = await fetch('/feedback');
-    const data = await response.json();
+  loadingMessage.style.display = "block";
+  emptyMessage.style.display = "none";
+  errorMessage.style.display = "none";
+  feedbackList.innerHTML = "";
 
-    loadingMessage.style.display = 'none';
-
-    if (!response.ok) {
-      errorMessage.style.display = 'block';
-      errorMessage.textContent =
-        data.message || data.error || 'Failed to load feedback.';
-      return;
-    }
-
-    /*
-      Supports a few possible backend response styles.
-
-      Example 1:
-      data = [...]
-
-      Example 2:
-      data = {
-        success: true,
-        feedback: [...]
+  fetch("/feedback", {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+    },
+    credentials: "same-origin",
+  })
+    .then(function (response) {
+      if (!response.ok) {
+        throw new Error("Failed to retrieve feedback.");
       }
-    */
-    const feedbacks = Array.isArray(data)
-      ? data
-      : data.feedback || data.feedbacks || data.data || [];
 
-    feedbackList.innerHTML = '';
-    feedbackCount.textContent = `Total Feedback: ${feedbacks.length}`;
+      return response.json();
+    })
+    .then(function (data) {
+      loadingMessage.style.display = "none";
 
-    if (feedbacks.length === 0) {
-      emptyMessage.style.display = 'block';
-      return;
-    }
+      const feedback = data.feedback;
 
-    feedbacks.forEach((feedback) => {
-      const feedbackId = feedback.feedback_id || feedback.feedbackId;
-      const productName = feedback.product_name || feedback.productName || '-';
-      const rating = Number(feedback.rating) || 0;
-      const commentText = feedback.comment_text || feedback.commentText || '-';
-      const updatedAt =
-        feedback.updated_at || feedback.updatedAt || feedback.last_updated;
+      feedbackCount.textContent = `Total Feedback: ${feedback.length}`;
 
-      const feedbackItem = document.createElement('div');
-      feedbackItem.className = 'my-feedback-item';
+      if (feedback.length === 0) {
+        emptyMessage.style.display = "block";
+        return;
+      }
 
-      feedbackItem.innerHTML = `
-        <h5 class="feedback-id-title">
-          Feedback ID: ${escapeHTML(feedbackId)}
-        </h5>
+      feedback.forEach(function (item) {
+        const feedbackCard = document.createElement("div");
+        feedbackCard.className = "card mb-3";
 
-        <p>
-          <strong>Product Name:</strong>
-          ${escapeHTML(productName)}
-        </p>
+        feedbackCard.innerHTML = `
+                    <div class="card-body">
+                        <h5 class="card-title">${item.product_name}</h5>
 
-        <p>
-          <strong>Rating:</strong>
-          <span class="feedback-stars">${'⭐'.repeat(rating)}</span>
-        </p>
+                        <p class="card-text">
+                            <strong>Rating:</strong> ${"⭐".repeat(Number(item.rating))}
+                        </p>
 
-        <p>
-          <strong>Comments:</strong>
-          ${escapeHTML(commentText)}
-        </p>
+                        <p class="card-text">
+                            <strong>Comments:</strong> ${item.comments}
+                        </p>
 
-        <p>
-          <strong>Last Updated:</strong>
-          ${formatDateTime(updatedAt)}
-        </p>
+                        <p class="card-text text-muted">
+                            <small>
+                                Last updated: ${formatDate(item.updated_at)}
+                            </small>
+                        </p>
 
-        <button
-          class="btn btn-dark btn-sm me-2"
-          onclick="goToEditFeedback(${feedbackId})"
-        >
-          Update
-        </button>
+                        <div class="d-flex gap-2">
+                            <a 
+                                href="/member/feedback/edit?feedbackId=${item.feedback_id}" 
+                                class="btn btn-warning btn-sm"
+                            >
+                                Edit
+                            </a>
 
-        <button
-          class="btn btn-outline-dark btn-sm"
-          onclick="deleteFeedback(${feedbackId})"
-        >
-          Delete
-        </button>
-      `;
+                            <button 
+                                type="button"
+                                class="btn btn-danger btn-sm"
+                                onclick="showDeleteFeedbackForm(${item.feedback_id})"
+                            >
+                                Delete
+                            </button>
+                        </div>
+                    </div>
+                `;
 
-      feedbackList.appendChild(feedbackItem);
+        feedbackList.appendChild(feedbackCard);
+      });
+    })
+    .catch(function (error) {
+      loadingMessage.style.display = "none";
+      errorMessage.style.display = "block";
+      errorMessage.textContent = error.message;
     });
-  } catch (error) {
-    console.error('Error loading feedback:', error);
-    loadingMessage.style.display = 'none';
-    errorMessage.style.display = 'block';
-    errorMessage.textContent = 'Something went wrong while loading feedback.';
-  }
 }
 
-/*
-  Redirect to edit feedback page.
+function formatDate(dateString) {
+  if (!dateString) {
+    return "N/A";
+  }
 
-  Page route:
-  /member/feedback/edit?feedbackId=3
-*/
-function goToEditFeedback(feedbackId) {
-  window.location.href = `/member/feedback/edit?feedbackId=${feedbackId}`;
+  const date = new Date(dateString);
+  return date.toLocaleString();
 }
 
-/*
-  Deletes selected feedback.
+function showDeleteFeedbackForm(feedbackId) {
+  const deleteFeedbackBox = document.getElementById("deleteFeedbackBox");
+  const deleteFeedbackId = document.getElementById("deleteFeedbackId");
 
-  API route needed later:
-  DELETE /feedback/:feedbackId
-*/
-async function deleteFeedback(feedbackId) {
-  const confirmDelete = confirm('Are you sure you want to delete this feedback?');
+  deleteFeedbackId.value = feedbackId;
+  deleteFeedbackBox.style.display = "block";
 
-  if (!confirmDelete) {
-    return;
-  }
-
-  const errorMessage = document.getElementById('error-message');
-  const successMessage = document.getElementById('success-message');
-
-  errorMessage.style.display = 'none';
-  successMessage.style.display = 'none';
-
-  try {
-    const response = await fetch(`/feedback/${feedbackId}`, {
-      method: 'DELETE'
-    });
-
-    const data = await response.json();
-
-    if (!response.ok || !data.success) {
-      errorMessage.style.display = 'block';
-      errorMessage.textContent =
-        data.message || data.error || 'Failed to delete feedback.';
-      return;
-    }
-
-    successMessage.style.display = 'block';
-    successMessage.textContent =
-      data.message || 'Feedback deleted successfully.';
-
-    loadMyFeedback();
-  } catch (error) {
-    console.error('Error deleting feedback:', error);
-    errorMessage.style.display = 'block';
-    errorMessage.textContent = 'Something went wrong while deleting feedback.';
-  }
+  deleteFeedbackBox.scrollIntoView({
+    behavior: "smooth",
+  });
 }
 
-/*
-  Converts database timestamp into readable date/time.
-*/
-function formatDateTime(value) {
-  if (!value) {
-    return '-';
-  }
+function cancelDeleteFeedback() {
+  const deleteFeedbackBox = document.getElementById("deleteFeedbackBox");
+  const deleteFeedbackId = document.getElementById("deleteFeedbackId");
 
-  return new Date(value).toLocaleString();
-}
-
-/*
-  Prevents raw user/database text from being treated as HTML.
-*/
-function escapeHTML(value) {
-  if (value === null || value === undefined) {
-    return '';
-  }
-
-  return String(value)
-    .replaceAll('&', '&amp;')
-    .replaceAll('<', '&lt;')
-    .replaceAll('>', '&gt;')
-    .replaceAll('"', '&quot;')
-    .replaceAll("'", '&#039;');
+  deleteFeedbackId.value = "";
+  deleteFeedbackBox.style.display = "none";
 }

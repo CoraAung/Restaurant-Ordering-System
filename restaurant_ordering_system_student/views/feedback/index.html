@@ -55,27 +55,51 @@
 
       <!-- Feedback List Box -->
       <div class="feedback-form-box feedback-list-box">
-        <h4 class="feedback-form-title">
-          Retrieve All My Feedback
-        </h4>
+        <h4 class="feedback-form-title">Retrieve All My Feedback</h4>
 
-        <p id="feedback-count" class="text-center fw-bold">
-          Total Feedback: 0
-        </p>
+        <p id="feedback-count" class="text-center fw-bold">Total Feedback: 0</p>
 
-        <p id="loading-message" class="text-center">
-          Loading feedback...
-        </p>
+        <p id="loading-message" class="text-center">Loading feedback...</p>
 
-        <p
-          id="empty-message"
-          class="text-center fw-bold"
-          style="display: none"
-        >
+        <p id="empty-message" class="text-center fw-bold" style="display: none">
           You have not submitted any feedback yet.
         </p>
 
         <div id="feedbackList"></div>
+        <!-- Delete Feedback Form -->
+        <div
+          id="deleteFeedbackBox"
+          class="feedback-form-box mt-4"
+          style="display: none"
+        >
+          <h4 class="feedback-form-title">Delete Feedback</h4>
+
+          <form id="deleteFeedbackForm">
+            <div class="mb-3">
+              <label for="deleteFeedbackId" class="form-label fw-bold">
+                Feedback ID
+              </label>
+
+              <input
+                type="number"
+                id="deleteFeedbackId"
+                class="form-control"
+                readonly
+                required
+              />
+            </div>
+
+            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+
+            <button
+              type="button"
+              class="btn btn-secondary btn-sm"
+              onclick="cancelDeleteFeedback()"
+            >
+              Cancel
+            </button>
+          </form>
+        </div>
       </div>
     </main>
 
@@ -84,5 +108,6 @@
 
     <!-- Feedback Index JS -->
     <script src="/js/feedback-index.js"></script>
+    <script src="/js/feedback-delete.js"></script>
   </body>
 </html>

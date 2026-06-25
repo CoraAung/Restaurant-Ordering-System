@@ -2,11 +2,9 @@
 
 // Import Express to create route handlers
 const express = require('express');
-
-// Import path to safely locate HTML files in the views folder
 const path = require('path');
 
-// Middleware to make sure only logged-in users can access these pages
+//export only one specific function: ensureAuthenticated from ../middleware/auth.js
 const { ensureAuthenticated } = require('../middleware/auth');
 
 // Create an Express router object

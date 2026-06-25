@@ -32,6 +32,7 @@ app.use('/member', require('./routes/productsPage'));
 // Serves feedback HTML pages such as index.html, create.html, and edit.html.
 app.use('/member/feedback', require('./routes/feedbackPage'));
 
+//backend routes
 // Handles feedback CRUD API requests and connects to controller/model/database logic.
 app.use('/feedback', require('./routes/feedback'));
 
