@@ -16,4 +16,7 @@ router.post('/', ensureAuthenticated, feedbackController.createFeedback);
 //DELETE /feedback/:feedback_id
 router.delete('/:feedback_id', ensureAuthenticated, feedbackController.removeFeedback);
 
+//PUT /feedback/:feedback_id
+router.put('/:feedback_id', ensureAuthenticated, feedbackController.updateFeedback);
+
 module.exports = router;

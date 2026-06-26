@@ -25,6 +25,19 @@ module.exports.insertFeedback = function insertFeedback(member_id, product_id, r
         });
 };
 
+module.exports.editFeedback = function editFeedback(member_id, feedback_id, rating, comments) {
+    return pool.query(
+        'CALL update_feedback($1, $2, $3, $4)',
+        [member_id, feedback_id, rating, comments]
+    )
+        .then(function (result) {
+            return result.rows;
+        })
+        .catch(function (error) {
+            throw error;
+        });
+};
+
 module.exports.deleteFeedback = function deleteFeedback(member_id, feedback_id) {
     return pool.query(
         'CALL delete_feedback($1, $2)',

@@ -44,6 +44,30 @@ module.exports.createFeedback = function (req, res) {
         });
 };
  
+module.exports.updateFeedback = function (req, res) {
+    const member_id = req.user.user_id;
+    const feedback_id = req.params.feedback_id;
+    const rating = req.body.rating;
+    const comments = req.body.comments;
+
+    return feedbackModel
+        .editFeedback(member_id, feedback_id, rating, comments)
+        .then(function () {
+            return res.status(200).json({
+                success: true,
+                message: 'Feedback updated successfully.'
+            });
+        })
+        .catch(function (error) {
+            console.error(error);
+
+            return res.status(400).json({
+                success: false,
+                error: error.message
+            });
+        });
+};
+
 module.exports.removeFeedback = function (req, res) {
     const member_id = req.user.user_id;
     const feedback_id = req.params.feedback_id;
