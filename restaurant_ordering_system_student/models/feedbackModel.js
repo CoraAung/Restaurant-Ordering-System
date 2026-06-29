@@ -50,3 +50,42 @@ module.exports.deleteFeedback = function deleteFeedback(member_id, feedback_id) 
             throw error;
         });
 };
+
+module.exports.getFeedbackByProduct = function getFeedbackByProduct(product_id, member_id) {
+    return pool.query(
+        'SELECT * FROM get_feedback_by_product($1, $2)',
+        [product_id, member_id]
+    )
+        .then(function (result) {
+            return result.rows;
+        })
+        .catch(function (error) {
+            throw error;
+        });
+};
+
+module.exports.getResponsesByFeedback = function getResponsesByFeedback(feedback_id, member_id) {
+    return pool.query(
+        'SELECT * FROM get_responses_by_feedback($1, $2)',
+        [feedback_id, member_id]
+    )
+        .then(function (result) {
+            return result.rows;
+        })
+        .catch(function (error) {
+            throw error;
+        });
+};
+
+module.exports.insertResponse = function insertResponse(feedback_id, member_id, response_comment) {
+    return pool.query(
+        'CALL create_response($1, $2, $3)',
+        [feedback_id, member_id, response_comment]
+    )
+        .then(function (result) {
+            return result.rows;
+        })
+        .catch(function (error) {
+            throw error;
+        });
+};

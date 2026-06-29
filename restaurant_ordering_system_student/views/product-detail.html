@@ -98,7 +98,28 @@
           </button>
         </div>
       </div>
+   
+
+      <!-- Feedback Received By This Product -->
+  <div class="card mt-4">
+    <div class="card-body">
+      <h4 class="text-center mb-4">Reviews</h4>
+
+      <p id="product-feedback-loading" class="text-center">
+        Loading feedback...
+      </p>
+
+      <p
+        id="product-feedback-empty"
+        class="text-center fw-bold"
+        style="display: none"
+      >
+        No feedback has been submitted for this product yet.
+      </p>
+
+      <div id="productFeedbackList"></div>
     </div>
+  </div>
 
   </main>
 
@@ -173,7 +194,7 @@
     }
   </script>
 
-  <!--<script src="/js/product-feedback.js"></script>-->
+  <script src="/js/product-feedback.js"></script>
 
 </body>
 </html>

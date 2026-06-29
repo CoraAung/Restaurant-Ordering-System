@@ -93,3 +93,70 @@ module.exports.removeFeedback = function (req, res) {
             });
         });
 };
+
+module.exports.retrieveFeedbackByProduct = function (req, res) {
+    const product_id = req.params.product_id;
+    const member_id = req.user.user_id;
+
+    return feedbackModel
+        .getFeedbackByProduct(product_id, member_id)
+        .then(function (feedback) {
+            return res.status(200).json({
+                success: true,
+                feedback: feedback
+            });
+        })
+        .catch(function (error) {
+            console.error(error);
+
+            return res.status(400).json({
+                success: false,
+                error: error.message
+            });
+        });
+};
+
+module.exports.retrieveResponsesByFeedback = function (req, res) {
+    const feedback_id = req.params.feedback_id;
+    const member_id = req.user.user_id;
+
+    return feedbackModel
+        .getResponsesByFeedback(feedback_id, member_id)
+        .then(function (responses) {
+            return res.status(200).json({
+                success: true,
+                responses: responses
+            });
+        })
+        .catch(function (error) {
+            console.error(error);
+
+            return res.status(400).json({
+                success: false,
+                error: error.message
+            });
+        });
+};
+
+module.exports.createResponse = function (req, res) {
+    const feedback_id = req.params.feedback_id;
+    const member_id = req.user.user_id;
+    const response_comment = req.body.response_comment;
+
+    return feedbackModel
+        .insertResponse(feedback_id, member_id, response_comment)
+        .then(function () {
+            return res.status(201).json({
+                success: true,
+                message: 'Response created successfully.'
+            });
+        })
+        .catch(function (error) {
+            console.error(error);
+
+            return res.status(400).json({
+                success: false,
+                error: error.message
+            });
+        });
+};
