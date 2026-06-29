@@ -28,4 +28,7 @@ router.get('/:feedback_id/responses', ensureAuthenticated, feedbackController.re
 // POST /feedback/:feedback_id/responses - create response for one feedback
 router.post('/:feedback_id/responses', ensureAuthenticated, feedbackController.createResponse);
 
+// DELETE /feedback/responses/:response_id - delete own response
+router.delete('/responses/:response_id', ensureAuthenticated, feedbackController.removeResponse);
+
 module.exports = router;

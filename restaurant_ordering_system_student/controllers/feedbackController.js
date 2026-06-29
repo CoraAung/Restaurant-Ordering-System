@@ -160,3 +160,25 @@ module.exports.createResponse = function (req, res) {
             });
         });
 };
+
+module.exports.removeResponse = function (req, res) {
+    const member_id = req.user.user_id;
+    const response_id = req.params.response_id;
+
+    return feedbackModel
+        .deleteResponse(member_id, response_id)
+        .then(function () {
+            return res.status(200).json({
+                success: true,
+                message: 'Response deleted successfully.'
+            });
+        })
+        .catch(function (error) {
+            console.error(error);
+
+            return res.status(400).json({
+                success: false,
+                error: error.message
+            });
+        });
+};

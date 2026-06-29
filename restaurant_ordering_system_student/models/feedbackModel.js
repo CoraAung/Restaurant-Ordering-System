@@ -89,3 +89,16 @@ module.exports.insertResponse = function insertResponse(feedback_id, member_id, 
             throw error;
         });
 };
+
+module.exports.deleteResponse = function deleteResponse(member_id, response_id) {
+    return pool.query(
+        'CALL delete_response($1, $2)',
+        [member_id, response_id]
+    )
+        .then(function (result) {
+            return result.rows;
+        })
+        .catch(function (error) {
+            throw error;
+        });
+};
