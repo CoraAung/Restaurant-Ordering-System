@@ -36,6 +36,8 @@ app.use('/member/feedback', require('./routes/feedbackPage'));
 // Handles feedback CRUD API requests and connects to controller/model/database logic.
 app.use('/feedback', require('./routes/feedback'));
 
+app.use('/api/dashboard', require('./routes/dashboardApi'));
+
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });

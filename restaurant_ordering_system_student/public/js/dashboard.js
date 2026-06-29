@@ -74,6 +74,9 @@ function getStatusBadgeClass(status) {
 function populateCategories(categories) {
     const categorySelect = document.getElementById('category');
     
+    // Clear old options first
+    categorySelect.innerHTML = '<option value="">All Categories</option>';
+    
     categories.forEach(category => {
         const option = document.createElement('option');
         option.value = category;
@@ -85,7 +88,7 @@ function populateCategories(categories) {
 function updateFilters(filters) {
     if (filters.startDate) document.getElementById('start_date').value = filters.startDate;
     if (filters.endDate) document.getElementById('end_date').value = filters.endDate;
-    if (filters.productCategory) document.getElementById('category').value = filters.productCategory;
+    if (filters.category) document.getElementById('category').value = filters.category;
     if (filters.sortBy) document.getElementById('sort_by').value = filters.sortBy;
     if (filters.sortOrder) document.getElementById('sort_order').value = filters.sortOrder;
 }
