@@ -1,5 +1,6 @@
 const pool = require('../config/database');
 
+//get sale order summary as an admin using filters
 module.exports.getSaleOrderSummary = function getSaleOrderSummary(adminMemberId, filters) {
     return pool.query(
         'SELECT * FROM get_sale_order_summary($1, $2, $3, $4, $5, $6)',
@@ -20,6 +21,7 @@ module.exports.getSaleOrderSummary = function getSaleOrderSummary(adminMemberId,
         });
 };
 
+//get categories to populate the product catergory drop down list
 module.exports.getCategories = function getCategories() {
     return pool.query(
         `SELECT DISTINCT category

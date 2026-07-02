@@ -28,8 +28,11 @@
 //         }
 //     }
 // }
+
+//import the dashboard model
 const dashboardModel = require('../models/dashboardModel');
 
+//retrieve dashboard data
 module.exports.retrieveDashboardData = function (req, res) {
     const filters = {
         startDate: req.query.start_date || null,

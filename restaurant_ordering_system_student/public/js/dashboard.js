@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', function() {
     setupFilterForm();
 });
 
+//call the api route to fetch the data for dashboard
 function loadDashboardData() {
     const urlParams = new URLSearchParams(window.location.search);
     const filters = Object.fromEntries(urlParams);
@@ -25,6 +26,7 @@ function loadDashboardData() {
         });
 }
 
+//function to display orders as returned from dashboard api
 function displayOrders(orders) {
     const tbody = document.getElementById('orders-tbody');
     const noOrders = document.getElementById('no-orders');
@@ -61,6 +63,7 @@ function displayOrders(orders) {
     tbody.innerHTML = ordersHTML;
 }
 
+//color code according to the status of the orders
 function getStatusBadgeClass(status) {
     switch (status) {
         case 'COMPLETED': return 'success';
@@ -71,6 +74,7 @@ function getStatusBadgeClass(status) {
     }
 }
 
+//populate the categories in the drop down so admin can filter according to the catergory
 function populateCategories(categories) {
     const categorySelect = document.getElementById('category');
     
@@ -85,6 +89,7 @@ function populateCategories(categories) {
     });
 }
 
+//update the filters
 function updateFilters(filters) {
     if (filters.startDate) document.getElementById('start_date').value = filters.startDate;
     if (filters.endDate) document.getElementById('end_date').value = filters.endDate;
@@ -93,6 +98,7 @@ function updateFilters(filters) {
     if (filters.sortOrder) document.getElementById('sort_order').value = filters.sortOrder;
 }
 
+//listen for submission of form and load dashboard data on submission
 function setupFilterForm() {
     const form = document.getElementById('filter-form');
     form.addEventListener('submit', function(e) {

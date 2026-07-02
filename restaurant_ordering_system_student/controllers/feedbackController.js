@@ -1,5 +1,6 @@
 const feedbackModel = require('../models/feedbackModel');
 
+//retrieve all feedback by member_id
 module.exports.retrieveAllFeedbackById = function (req, res) {
     const member_id = req.user.user_id;
 
@@ -20,6 +21,7 @@ module.exports.retrieveAllFeedbackById = function (req, res) {
         });
 };
 
+//create new feedback (only if a member has ordered the menu item before)
 module.exports.createFeedback = function (req, res) {
     const member_id = req.user.user_id;
     const product_id = req.body.product_id;
@@ -44,6 +46,7 @@ module.exports.createFeedback = function (req, res) {
         });
 };
  
+//update existing feedback
 module.exports.updateFeedback = function (req, res) {
     const member_id = req.user.user_id;
     const feedback_id = req.params.feedback_id;
@@ -68,6 +71,7 @@ module.exports.updateFeedback = function (req, res) {
         });
 };
 
+//remove feedback written 
 module.exports.removeFeedback = function (req, res) {
     const member_id = req.user.user_id;
     const feedback_id = req.params.feedback_id;
@@ -94,6 +98,7 @@ module.exports.removeFeedback = function (req, res) {
         });
 };
 
+//retrieve feedback by product_id
 module.exports.retrieveFeedbackByProduct = function (req, res) {
     const product_id = req.params.product_id;
     const member_id = req.user.user_id;
@@ -116,6 +121,7 @@ module.exports.retrieveFeedbackByProduct = function (req, res) {
         });
 };
 
+//retrieve the responses by feedback_id
 module.exports.retrieveResponsesByFeedback = function (req, res) {
     const feedback_id = req.params.feedback_id;
     const member_id = req.user.user_id;
@@ -138,6 +144,7 @@ module.exports.retrieveResponsesByFeedback = function (req, res) {
         });
 };
 
+//create a response to a feedback
 module.exports.createResponse = function (req, res) {
     const feedback_id = req.params.feedback_id;
     const member_id = req.user.user_id;
@@ -161,6 +168,7 @@ module.exports.createResponse = function (req, res) {
         });
 };
 
+//remove the response 
 module.exports.removeResponse = function (req, res) {
     const member_id = req.user.user_id;
     const response_id = req.params.response_id;
