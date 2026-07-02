@@ -2,12 +2,12 @@
 -- PostgreSQL database dump
 --
 
-\restrict 3kdKUg1VHaklIWUe6IA7ZAqlbJjbkfhiIxLWrrsVYuiPcyOBZBiLo8fjKX5TJV5
+\restrict PehdtfTM6NSVrvpSdRhLilbkzbWW3VmVd1ZFMTCaoNxgv3kgSCZIsaTjTPypD5V
 
 -- Dumped from database version 18.3
 -- Dumped by pg_dump version 18.3
 
--- Started on 2026-06-30 14:13:00
+-- Started on 2026-07-02 23:38:00
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -22,7 +22,7 @@ SET client_min_messages = warning;
 SET row_security = off;
 
 --
--- TOC entry 245 (class 1255 OID 25777)
+-- TOC entry 243 (class 1255 OID 25777)
 -- Name: create_feedback(integer, integer, integer, character varying); Type: PROCEDURE; Schema: public; Owner: -
 --
 
@@ -81,7 +81,7 @@ $$;
 
 
 --
--- TOC entry 249 (class 1255 OID 25789)
+-- TOC entry 245 (class 1255 OID 25789)
 -- Name: create_response(integer, integer, character varying); Type: PROCEDURE; Schema: public; Owner: -
 --
 
@@ -143,7 +143,7 @@ $$;
 
 
 --
--- TOC entry 233 (class 1255 OID 25783)
+-- TOC entry 248 (class 1255 OID 25783)
 -- Name: delete_feedback(integer, integer); Type: PROCEDURE; Schema: public; Owner: -
 --
 
@@ -151,6 +151,16 @@ CREATE PROCEDURE public.delete_feedback(IN p_member_id integer, IN p_feedback_id
     LANGUAGE plpgsql
     AS $$
 BEGIN
+    -- Check member_id is not null
+    IF p_member_id IS NULL THEN
+        RAISE EXCEPTION 'Member ID is required.';
+    END IF;
+
+    -- Check feedback_id is not null
+    IF p_feedback_id IS NULL THEN
+        RAISE EXCEPTION 'Feedback ID is required.';
+    END IF;
+	
 	--Check feedback exists
 	IF NOT EXISTS(
 	  SELECT 1
@@ -179,7 +189,7 @@ $$;
 
 
 --
--- TOC entry 251 (class 1255 OID 25791)
+-- TOC entry 247 (class 1255 OID 25791)
 -- Name: delete_response(integer, integer); Type: PROCEDURE; Schema: public; Owner: -
 --
 
@@ -225,7 +235,7 @@ $$;
 
 
 --
--- TOC entry 232 (class 1255 OID 25782)
+-- TOC entry 249 (class 1255 OID 25782)
 -- Name: get_feedback(integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -233,6 +243,11 @@ CREATE FUNCTION public.get_feedback(p_member_id integer) RETURNS TABLE(feedback_
     LANGUAGE plpgsql
     AS $$
 BEGIN 
+-- Check member_id is not null
+    IF p_member_id IS NULL THEN
+        RAISE EXCEPTION 'Member ID is required.';
+    END IF;
+	
 	RETURN QUERY 
 	SELECT df.feedback_id, p.name, df.rating, df.comments, df.updated_at
 	FROM dining_feedback df
@@ -244,7 +259,7 @@ $$;
 
 
 --
--- TOC entry 248 (class 1255 OID 25788)
+-- TOC entry 246 (class 1255 OID 25788)
 -- Name: get_feedback_by_product(integer, integer); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -260,6 +275,12 @@ BEGIN
     ) THEN
         RAISE EXCEPTION 'Product not found.';
     END IF;
+	
+	-- Check logged-in member_id is not null
+    IF p_logged_in_member_id IS NULL THEN
+        RAISE EXCEPTION 'Member ID is required.';
+    END IF;
+	
 	RETURN QUERY
 	SELECT df.feedback_id, m.member_id,  CONCAT(m.first_name, ' ', m.last_name) AS member_name, df.rating, df.comments, df.updated_at AS last_updated, df.member_id <> p_logged_in_member_id AS can_respond
 	FROM dining_feedback df
@@ -280,6 +301,16 @@ CREATE FUNCTION public.get_responses_by_feedback(p_feedback_id integer, p_member
     LANGUAGE plpgsql
     AS $$
 BEGIN
+	-- Check feedback_id is not null
+    IF p_feedback_id IS NULL THEN
+        RAISE EXCEPTION 'Feedback ID is required.';
+    END IF;
+
+    -- Check member_id is not null
+    IF p_member_id IS NULL THEN
+        RAISE EXCEPTION 'Member ID is required.';
+    END IF;
+	
     -- Check feedback exists
     IF NOT EXISTS (
         SELECT 1
@@ -308,7 +339,7 @@ $$;
 
 
 --
--- TOC entry 247 (class 1255 OID 25779)
+-- TOC entry 251 (class 1255 OID 25779)
 -- Name: get_sale_order_summary(integer, date, date, text, text, text); Type: FUNCTION; Schema: public; Owner: -
 --
 
@@ -398,15 +429,12 @@ BEGIN
     RETURN QUERY EXECUTE query
     USING p_start_date, p_end_date, p_category;
 
-EXCEPTION
-    WHEN OTHERS THEN
-        RAISE EXCEPTION 'Error retrieving sale order summary: %', SQLERRM;
 END;
 $_$;
 
 
 --
--- TOC entry 246 (class 1255 OID 25784)
+-- TOC entry 244 (class 1255 OID 25784)
 -- Name: update_feedback(integer, integer, integer, character varying); Type: PROCEDURE; Schema: public; Owner: -
 --
 
@@ -414,6 +442,16 @@ CREATE PROCEDURE public.update_feedback(IN p_member_id integer, IN p_feedback_id
     LANGUAGE plpgsql
     AS $$
 BEGIN
+-- Check member_id is not null
+    IF p_member_id IS NULL THEN
+        RAISE EXCEPTION 'Member ID is required.';
+    END IF;
+
+    -- Check feedback_id is not null
+    IF p_feedback_id IS NULL THEN
+        RAISE EXCEPTION 'Feedback ID is required.';
+    END IF;
+
  --Check feedback exists
 	IF NOT EXISTS(
 	  SELECT 1
@@ -878,11 +916,11 @@ ALTER TABLE ONLY public.sale_order
     ADD CONSTRAINT sale_order_member_id_fkey FOREIGN KEY (member_id) REFERENCES public.member(member_id);
 
 
--- Completed on 2026-06-30 14:13:00
+-- Completed on 2026-07-02 23:38:00
 
 --
 -- PostgreSQL database dump complete
 --
 
-\unrestrict 3kdKUg1VHaklIWUe6IA7ZAqlbJjbkfhiIxLWrrsVYuiPcyOBZBiLo8fjKX5TJV5
+\unrestrict PehdtfTM6NSVrvpSdRhLilbkzbWW3VmVd1ZFMTCaoNxgv3kgSCZIsaTjTPypD5V
 
