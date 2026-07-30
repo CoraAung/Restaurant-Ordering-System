@@ -33,8 +33,8 @@ router.get('/create', ensureAuthenticated, (req, res) => {
   - This route only sends the HTML file.
   - The actual cart items are loaded using GET /cart/items and GET /cart/summary.
 */
-// router.get('/retrieve/all', ensureAuthenticated, (req, res) => {
-//   res.sendFile(path.join(__dirname, '../views/cart/retrieve-all.html'));
-// });
+ router.get('/retrieve/all', ensureAuthenticated, (req, res) => {
+   res.sendFile(path.join(__dirname, '../views/cart/retrieve-all.html'));
+ });
 
 module.exports = router;
