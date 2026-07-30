@@ -50,6 +50,7 @@ model member {
   feedbackResponse feedbackResponse[]
   memberRole       memberRole[]
   saleOrder        saleOrder[]
+  cart             cart?
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
@@ -72,6 +73,7 @@ model product {
   createdAt      DateTime?        @default(now()) @map("created_at") @db.Timestamp(6)
   diningFeedback diningFeedback[]
   saleOrderItem  saleOrderItem[]
+  cartItem       cartItem[]
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
@@ -100,4 +102,30 @@ model saleOrderItem {
   product     product?   @relation(fields: [productId], references: [productId], onDelete: NoAction, onUpdate: NoAction)
 
   @@map("sale_order_item")
+}
+
+
+model cart {
+  cartId    Int       @id @default(autoincrement()) @map("cart_id")
+  memberId  Int       @unique @map("member_id")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime? @updatedAt @map("updated_at")
+
+  member    member    @relation(fields: [memberId], references: [memberId], onDelete: NoAction, onUpdate: NoAction, map: "fk_cart_member")
+  cartItem  cartItem[]
+}
+
+model cartItem {
+  cartItemId Int       @id @default(autoincrement()) @map("cart_item_id")
+  cartId     Int       @map("cart_id")
+  productId  Int       @map("product_id")
+  quantity   Int
+  createdAt  DateTime  @default(now()) @map("created_at")
+  updatedAt  DateTime? @updatedAt @map("updated_at")
+
+  cart       cart      @relation(fields: [cartId], references: [cartId], onDelete: Cascade, onUpdate: NoAction, map: "fk_cart_item_cart")
+  product    product   @relation(fields: [productId], references: [productId], onDelete: NoAction, onUpdate: NoAction, map: "fk_cart_item_product")
+
+  @@unique([cartId, productId], map: "uq_cart_item_cart_product")
+  @@map("cart_item")
 }
