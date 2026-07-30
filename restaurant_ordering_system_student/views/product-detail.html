@@ -1,90 +1,97 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Product Details - Member View</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Product Details - Member View</title>
 
-  <!-- Bootstrap -->
-  <link
-    href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
-    rel="stylesheet"
-  >
+    <!-- Bootstrap -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
 
-  <!-- Your custom CSS -->
-  <link rel="stylesheet" href="/css/style.css">
-</head>
-<body>
-
-  <!-- Navigation Bar (identical to products.html) -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-    <div class="container">
-      <a class="navbar-brand" href="#">Restaurant Ordering System</a>
-      <div class="navbar-nav ms-auto align-items-center">
-        <span class="navbar-text me-3">Welcome, Member</span>
-        <a href="/logout" class="btn btn-outline-light btn-sm">Logout</a>
-      </div>
-    </div>
-  </nav>
-
-  <!-- Main Content -->
-  <main class="container mt-4">
-
-    <!-- Back Button -->
-    <div class="mb-3">
-      <a href="/member/products" class="btn btn-outline-secondary btn-sm">
-        ← Back to Products
-      </a>
-    </div>
-
-    <!-- Loading State -->
-    <div id="loading" class="text-center py-5">
-      <div class="spinner-border text-secondary" role="status">
-        <span class="visually-hidden">Loading...</span>
-      </div>
-    </div>
-
-    <!-- Error State -->
-    <div id="error-message" class="alert alert-danger" style="display: none;">
-      Failed to load product details.
-    </div>
-
-    <!-- Product Detail Card -->
-    <div id="product-detail" style="display: none;">
-      <div class="card">
-        <div class="card-body">
-          <h4 class="card-title mb-4" id="detail-name"></h4>
-
-          <table class="table table-striped align-middle">
-            <tbody>
-              <tr>
-                <th scope="row" style="width: 200px;">Category</th>
-                <td id="detail-category"></td>
-              </tr>
-              <tr>
-                <th scope="row">Description</th>
-                <td id="detail-description"></td>
-              </tr>
-              <tr>
-                <th scope="row">Price</th>
-                <td id="detail-price"></td>
-              </tr>
-              <tr>
-                <th scope="row">Status</th>
-                <td id="detail-status"></td>
-              </tr>
-              <tr>
-                <th scope="row">Created At</th>
-                <td id="detail-created-at"></td>
-              </tr>
-            </tbody>
-          </table>
-
+    <!-- Your custom CSS -->
+    <link rel="stylesheet" href="/css/style.css" />
+  </head>
+  <body>
+    <!-- Navigation Bar (identical to products.html) -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+      <div class="container">
+        <a class="navbar-brand" href="#">Restaurant Ordering System</a>
+        <div class="navbar-nav ms-auto align-items-center">
+          <span class="navbar-text me-3">Welcome, Member</span>
+          <a
+            href="/member/cart/retrieve/all"
+            class="btn btn-outline-light btn-sm me-2"
+            >🛒 Cart</a
+          >
+          <a href="/logout" class="btn btn-outline-light btn-sm">Logout</a>
         </div>
       </div>
-    </div>
+    </nav>
 
-    <!-- Feedback Action Buttons -->
+    <!-- Main Content -->
+    <main class="container mt-4">
+      <!-- Back Button -->
+      <div class="mb-3">
+        <a href="/member/products" class="btn btn-outline-secondary btn-sm">
+          ← Back to Products
+        </a>
+      </div>
+
+      <!-- Loading State -->
+      <div id="loading" class="text-center py-5">
+        <div class="spinner-border text-secondary" role="status">
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      </div>
+
+      <!-- Error State -->
+      <div id="error-message" class="alert alert-danger" style="display: none">
+        Failed to load product details.
+      </div>
+
+      <!-- Product Detail Card -->
+      <div id="product-detail" style="display: none">
+        <div class="card">
+          <div class="card-body">
+            <div class="d-flex align-items-center mb-4">
+              <h4 class="card-title mb-0" id="detail-name"></h4>
+              <button id="addToCartBtn" class="btn btn-success btn-sm ms-3">
+                Add to Cart
+              </button>
+            </div>
+
+            <table class="table table-striped align-middle">
+              <tbody>
+                <tr>
+                  <th scope="row" style="width: 200px">Category</th>
+                  <td id="detail-category"></td>
+                </tr>
+                <tr>
+                  <th scope="row">Description</th>
+                  <td id="detail-description"></td>
+                </tr>
+                <tr>
+                  <th scope="row">Price</th>
+                  <td id="detail-price"></td>
+                </tr>
+                <tr>
+                  <th scope="row">Status</th>
+                  <td id="detail-status"></td>
+                </tr>
+                <tr>
+                  <th scope="row">Created At</th>
+                  <td id="detail-created-at"></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- Feedback Action Buttons -->
       <div class="card mt-4">
         <div class="card-body">
           <h5 class="card-title mb-3">Feedback Actions</h5>
@@ -98,103 +105,112 @@
           </button>
         </div>
       </div>
-   
 
       <!-- Feedback Received By This Product -->
-  <div class="card mt-4">
-    <div class="card-body">
-      <h4 class="text-center mb-4">Reviews</h4>
+      <div class="card mt-4">
+        <div class="card-body">
+          <h4 class="text-center mb-4">Reviews</h4>
 
-      <p id="product-feedback-loading" class="text-center">
-        Loading feedback...
-      </p>
+          <p id="product-feedback-loading" class="text-center">
+            Loading feedback...
+          </p>
 
-      <p
-        id="product-feedback-empty"
-        class="text-center fw-bold"
-        style="display: none"
-      >
-        No feedback has been submitted for this product yet.
-      </p>
+          <p
+            id="product-feedback-empty"
+            class="text-center fw-bold"
+            style="display: none"
+          >
+            No feedback has been submitted for this product yet.
+          </p>
 
-      <div id="productFeedbackList"></div>
-    </div>
-  </div>
+          <div id="productFeedbackList"></div>
+        </div>
+      </div>
+    </main>
 
-  </main>
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
-  <!-- Bootstrap JS -->
-  <script
-    src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js">
-  </script>
+    <script>
+      document.addEventListener("DOMContentLoaded", fetchProductDetail);
 
-  <script>
-    document.addEventListener('DOMContentLoaded', fetchProductDetail);
+      async function fetchProductDetail() {
+        const params = new URLSearchParams(window.location.search);
+        const productId = params.get("id");
 
-    async function fetchProductDetail() {
-      const params = new URLSearchParams(window.location.search);
-      const productId = params.get('id');
+        const loading = document.getElementById("loading");
+        const errorMessage = document.getElementById("error-message");
+        const productDetail = document.getElementById("product-detail");
 
-      const loading = document.getElementById('loading');
-      const errorMessage = document.getElementById('error-message');
-      const productDetail = document.getElementById('product-detail');
-
-      // If no product ID is present in the URL, show error immediately
-      if (!productId) {
-        loading.style.display = 'none';
-        errorMessage.style.display = 'block';
-        errorMessage.textContent = 'No product specified.';
-        return;
-      }
-
-       // Button click events for create feedback and view all my feedback
-  document.getElementById('createFeedbackBtn').addEventListener('click', () => {
-    window.location.href = `/member/feedback/create?productId=${productId}`;
-  });
-
-  document.getElementById('viewMyFeedbackBtn').addEventListener('click', () => {
-    window.location.href = '/member/feedback';
-  });
-
-      try {
-        const response = await fetch(`/products/${productId}`);
-        const data = await response.json();
-
-        loading.style.display = 'none';
-
-        if (!data.success || !data.product) {
-          errorMessage.style.display = 'block';
+        // If no product ID is present in the URL, show error immediately
+        if (!productId) {
+          loading.style.display = "none";
+          errorMessage.style.display = "block";
+          errorMessage.textContent = "No product specified.";
           return;
         }
 
-        const product = data.product;
+        // Button click events for create feedback and view all my feedback
+        document
+          .getElementById("createFeedbackBtn")
+          .addEventListener("click", () => {
+            window.location.href = `/member/feedback/create?productId=${productId}`;
+          });
 
-        document.title = `${product.name} - Member View`;
-        document.getElementById('detail-name').textContent = product.name;
-        document.getElementById('detail-category').textContent = product.category || '-';
-        document.getElementById('detail-description').textContent = product.description || '-';
-        document.getElementById('detail-price').textContent = `$${parseFloat(product.price).toFixed(2)}`;
-        document.getElementById('detail-created-at').textContent = new Date(product.created_at).toLocaleDateString();
+        document
+          .getElementById("viewMyFeedbackBtn")
+          .addEventListener("click", () => {
+            window.location.href = "/member/feedback";
+          });
 
-        // Render availability badge, consistent with products.html
-        const statusCell = document.getElementById('detail-status');
-        statusCell.innerHTML = `
-          <span class="badge ${product.is_available ? 'bg-success' : 'bg-secondary'}">
-            ${product.is_available ? 'Available' : 'Unavailable'}
+        document
+          .getElementById("addToCartBtn")
+          .addEventListener("click", () => {
+            window.location.href = `/member/cart/create?productId=${productId}`;
+          });
+
+        try {
+          const response = await fetch(`/products/${productId}`);
+          const data = await response.json();
+
+          loading.style.display = "none";
+
+          if (!data.success || !data.product) {
+            errorMessage.style.display = "block";
+            return;
+          }
+
+          const product = data.product;
+
+          document.title = `${product.name} - Member View`;
+          document.getElementById("detail-name").textContent = product.name;
+          document.getElementById("detail-category").textContent =
+            product.category || "-";
+          document.getElementById("detail-description").textContent =
+            product.description || "-";
+          document.getElementById("detail-price").textContent =
+            `$${parseFloat(product.price).toFixed(2)}`;
+          document.getElementById("detail-created-at").textContent = new Date(
+            product.created_at,
+          ).toLocaleDateString();
+
+          // Render availability badge, consistent with products.html
+          const statusCell = document.getElementById("detail-status");
+          statusCell.innerHTML = `
+          <span class="badge ${product.is_available ? "bg-success" : "bg-secondary"}">
+            ${product.is_available ? "Available" : "Unavailable"}
           </span>
         `;
 
-        productDetail.style.display = 'block';
-
-      } catch (error) {
-        console.error('Error fetching product detail:', error);
-        loading.style.display = 'none';
-        errorMessage.style.display = 'block';
+          productDetail.style.display = "block";
+        } catch (error) {
+          console.error("Error fetching product detail:", error);
+          loading.style.display = "none";
+          errorMessage.style.display = "block";
+        }
       }
-    }
-  </script>
+    </script>
 
-  <script src="/js/product-feedback.js"></script>
-
-</body>
+    <script src="/js/product-feedback.js"></script>
+  </body>
 </html>

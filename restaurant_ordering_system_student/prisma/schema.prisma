@@ -1,6 +1,5 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
@@ -104,15 +103,14 @@ model saleOrderItem {
   @@map("sale_order_item")
 }
 
-
 model cart {
   cartId    Int       @id @default(autoincrement()) @map("cart_id")
   memberId  Int       @unique @map("member_id")
   createdAt DateTime  @default(now()) @map("created_at")
   updatedAt DateTime? @updatedAt @map("updated_at")
 
-  member    member    @relation(fields: [memberId], references: [memberId], onDelete: NoAction, onUpdate: NoAction, map: "fk_cart_member")
-  cartItem  cartItem[]
+  member   member     @relation(fields: [memberId], references: [memberId], onDelete: NoAction, onUpdate: NoAction, map: "fk_cart_member")
+  cartItem cartItem[]
 }
 
 model cartItem {
@@ -123,8 +121,8 @@ model cartItem {
   createdAt  DateTime  @default(now()) @map("created_at")
   updatedAt  DateTime? @updatedAt @map("updated_at")
 
-  cart       cart      @relation(fields: [cartId], references: [cartId], onDelete: Cascade, onUpdate: NoAction, map: "fk_cart_item_cart")
-  product    product   @relation(fields: [productId], references: [productId], onDelete: NoAction, onUpdate: NoAction, map: "fk_cart_item_product")
+  cart    cart    @relation(fields: [cartId], references: [cartId], onDelete: Cascade, onUpdate: NoAction, map: "fk_cart_item_cart")
+  product product @relation(fields: [productId], references: [productId], onDelete: NoAction, onUpdate: NoAction, map: "fk_cart_item_product")
 
   @@unique([cartId, productId], map: "uq_cart_item_cart_product")
   @@map("cart_item")

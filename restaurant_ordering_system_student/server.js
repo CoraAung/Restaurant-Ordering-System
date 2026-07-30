@@ -38,6 +38,12 @@ app.use('/feedback', require('./routes/feedback'));
 
 app.use('/api/dashboard', require('./routes/dashboardApi'));
 
+// backend API routes for cart
+app.use('/cart', require('./routes/cart'));
+
+// frontend page routes
+app.use('/member/cart', require('./routes/cartPage'));
+
 app.listen(PORT, () => {
     console.log(`Server running on port ${PORT}`);
 });
