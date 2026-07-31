@@ -37,4 +37,9 @@ router.get('/create', ensureAuthenticated, (req, res) => {
    res.sendFile(path.join(__dirname, '../views/cart/retrieve-all.html'));
  });
 
+ // GET /member/cart/checkout - serves the checkout page
+router.get('/checkout', ensureAuthenticated, (req, res) => {
+  res.sendFile(path.join(__dirname, '../views/cart/checkout.html'));
+});
+
 module.exports = router;

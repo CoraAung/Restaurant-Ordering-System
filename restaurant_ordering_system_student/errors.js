@@ -26,6 +26,7 @@ module.exports.RAISE_EXCEPTION = class RAISE_EXCEPTION extends Error {};
 module.exports.INVALID_REFERENCE_ERROR = class INVALID_REFERENCE_ERROR extends (
   Error
 ) {};
+module.exports.CHECKOUT_CALCULATION_ERROR = class CHECKOUT_CALCULATION_ERROR extends Error {};
 
 // See more: https://www.postgresql.org/docs/current/errcodes-appendix.html
 module.exports.SQL_ERROR_CODE = {

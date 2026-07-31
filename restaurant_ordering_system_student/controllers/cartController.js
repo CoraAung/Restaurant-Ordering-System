@@ -160,3 +160,20 @@ module.exports.removeCartItem = function (req, res) {
             return res.status(500).json({ success: false, error: error.message });
         });
 };
+
+module.exports.retrieveCheckoutSummary = function (req, res) {
+    const memberId = req.user.user_id;
+
+    return cartModel
+        .calculateCheckout(memberId)
+        .then(function (checkoutSummary) {
+            return res.status(200).json({
+                success: true,
+                checkout: checkoutSummary,
+            });
+        })
+        .catch(function (error) {
+            console.error(error);
+            return res.status(500).json({ success: false, error: error.message });
+        });
+};

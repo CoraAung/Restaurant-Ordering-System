@@ -21,4 +21,6 @@ router.delete('/items/:cart_item_id', ensureAuthenticated, cartController.remove
  //GET /cart/summary - retrieve cart summary (total quantity, total checkout price)
 router.get('/summary', ensureAuthenticated, cartController.retrieveCartSummary);
 
+// GET /cart/checkout - retrieves the full checkout breakdown (order items, discounts, delivery, total)
+router.get('/checkout', ensureAuthenticated, cartController.retrieveCheckoutSummary);
 module.exports = router;

@@ -73,6 +73,7 @@ model product {
   diningFeedback diningFeedback[]
   saleOrderItem  saleOrderItem[]
   cartItem       cartItem[]
+  discount       discount[]
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
@@ -126,4 +127,21 @@ model cartItem {
 
   @@unique([cartId, productId], map: "uq_cart_item_cart_product")
   @@map("cart_item")
+}
+
+model discount {
+  discountId      Int      @id @default(autoincrement()) @map("discount_id")
+  discountName    String   @map("discount_name") @db.VarChar(100)
+  discountType    String   @map("discount_type") @db.VarChar(30)
+  productId       Int?     @map("product_id")
+  minQuantity     Int?     @map("min_quantity")
+  minCartValue    Decimal? @map("min_cart_value") @db.Decimal(10, 2)
+  maxCartValue    Decimal? @map("max_cart_value") @db.Decimal(10, 2)
+  appliesTo       String   @map("applies_to") @db.VarChar(20)
+  discountPercent Decimal? @map("discount_percent") @db.Decimal(5, 2)
+  discountAmount  Decimal? @map("discount_amount") @db.Decimal(10, 2)
+  isActive        Boolean  @default(true) @map("is_active")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  product product? @relation(fields: [productId], references: [productId], onDelete: NoAction, onUpdate: NoAction, map: "fk_discount_product")
 }

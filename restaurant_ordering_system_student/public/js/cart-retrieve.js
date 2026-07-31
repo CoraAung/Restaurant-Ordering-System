@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const checkoutBtn = document.getElementById('checkoutBtn');
     if (checkoutBtn) {
         checkoutBtn.addEventListener('click', function () {
-            window.location.href = '/member/checkout';
+            window.location.href = '/member/cart/checkout';
         });
     }
 });
