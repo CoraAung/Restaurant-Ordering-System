@@ -177,3 +177,51 @@ module.exports.retrieveCheckoutSummary = function (req, res) {
             return res.status(500).json({ success: false, error: error.message });
         });
 };
+
+const ADDRESS_REGEX = /^[a-zA-Z0-9\s,.\-#/']+$/;
+
+function sanitizeAddress(address) {
+    if (!address || typeof address !== 'string') {
+        return null;
+    }
+
+    const trimmed = address.trim();
+
+    if (trimmed.length === 0 || trimmed.length > 255) {
+        return null;
+    }
+
+    if (!ADDRESS_REGEX.test(trimmed)) {
+        return null;
+    }
+
+    return trimmed;
+}
+
+module.exports.submitPlaceOrder = function (req, res) {
+    const memberId = req.user.user_id;
+    const deliveryAddress = sanitizeAddress(req.body.delivery_address);
+
+    if (!deliveryAddress) {
+        return res.status(400).json({
+            success: false,
+            error: 'A valid delivery address is required (letters, numbers, and common punctuation only, max 255 characters).'
+        });
+    }
+
+    return cartModel
+        .placeOrder(memberId, deliveryAddress)
+        .then(function (result) {
+            return res.status(200).json({
+                success: true,
+                orderId: result.orderId,
+                itemsProcessed: result.itemsProcessed,
+                itemsPlaced: result.itemsPlaced,
+                itemsRemaining: result.itemsRemaining,
+            });
+        })
+        .catch(function (error) {
+            console.error(error);
+            return res.status(500).json({ success: false, error: error.message });
+        });
+};

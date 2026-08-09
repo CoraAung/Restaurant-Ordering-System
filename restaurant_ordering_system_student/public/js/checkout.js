@@ -101,24 +101,40 @@ function renderCheckout(checkout) {
 }
 
 function submitPlaceOrder() {
-    const confirmOrder = confirm('Place this order?');
+    const errorMessage = document.getElementById('error-message');
+    const addressError = document.getElementById('address-error');
+    const placeOrderBtn = document.getElementById('placeOrderBtn');
+    const deliveryAddress = document.getElementById('deliveryAddress').value.trim();
 
-    if (!confirmOrder) {
+    errorMessage.style.display = 'none';
+    addressError.style.display = 'none';
+
+    const ADDRESS_REGEX = /^[a-zA-Z0-9\s,.\-#/']+$/;
+
+    if (!deliveryAddress) {
+        addressError.style.display = 'block';
+        addressError.textContent = 'Delivery address is required.';
         return;
     }
 
-    const errorMessage = document.getElementById('error-message');
-    const successMessage = document.getElementById('success-message');
-    const placeOrderBtn = document.getElementById('placeOrderBtn');
+    if (!ADDRESS_REGEX.test(deliveryAddress)) {
+        addressError.style.display = 'block';
+        addressError.textContent = 'Address contains invalid characters. Only letters, numbers, and common punctuation (, . - # /) are allowed.';
+        return;
+    }
 
-    errorMessage.style.display = 'none';
-    successMessage.style.display = 'none';
     placeOrderBtn.disabled = true;
 
     fetch('/cart/place-order', {
         method: 'POST',
-        headers: { 'Accept': 'application/json' },
-        credentials: 'same-origin'
+        headers: {
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        credentials: 'same-origin',
+        body: JSON.stringify({
+            delivery_address: deliveryAddress
+        })
     })
         .then(function (response) {
             return response.json().then(function (data) {
@@ -129,12 +145,7 @@ function submitPlaceOrder() {
             });
         })
         .then(function (data) {
-            successMessage.style.display = 'block';
-            successMessage.textContent = data.message || 'Order placed successfully!';
-
-            setTimeout(function () {
-                window.location.href = '/member/products';
-            }, 1200);
+            renderOrderResult(data);
         })
         .catch(function (error) {
             console.error('Error placing order:', error);
@@ -143,6 +154,78 @@ function submitPlaceOrder() {
             placeOrderBtn.disabled = false;
         });
 }
+
+function renderOrderResult(data) {
+    document.getElementById('checkout-content').style.display = 'none';
+
+    const resultPanel = document.getElementById('order-result');
+    const alertBox = document.getElementById('order-result-alert');
+    const detailsBox = document.getElementById('order-result-details');
+    const actionsBox = document.getElementById('order-result-actions');
+
+    const itemsPlaced = data.itemsPlaced || [];
+    const itemsRemaining = data.itemsRemaining || [];
+
+    const placedListHTML = itemsPlaced.length > 0
+        ? `
+            <p class="mt-3 mb-1 fw-bold">Items placed:</p>
+            <ul>
+                ${itemsPlaced.map(function (item) {
+                    return `<li>${escapeHTML(item.productName)} x${item.quantity} — $${item.subTotalPrice.toFixed(2)}</li>`;
+                }).join('')}
+            </ul>
+        `
+        : '';
+
+    if (data.itemsProcessed > 0 && itemsRemaining.length === 0) {
+        // Scenario 1: full success
+        alertBox.className = 'alert alert-success';
+        alertBox.textContent = '✅ Order Placed Successfully!';
+
+        detailsBox.innerHTML = `
+            <p class="text-center mb-0">Order #${data.orderId} — Status: PACKING</p>
+            ${placedListHTML}
+        `;
+
+        actionsBox.innerHTML = `
+            <a href="/member/products" class="btn btn-outline-dark btn-sm">Continue Shopping</a>
+        `;
+    } else if (data.itemsProcessed > 0) {
+        // Scenario 2: partial success
+        alertBox.className = 'alert alert-warning';
+        alertBox.textContent = '⚠️ Order Placed for Available Items';
+
+        const remainingList = itemsRemaining.map(function (name) {
+            return `<li>${escapeHTML(name)}</li>`;
+        }).join('');
+
+        detailsBox.innerHTML = `
+            <p class="text-center mb-0">Order #${data.orderId} — Status: PACKING</p>
+            ${placedListHTML}
+            <p class="mt-3 mb-1 fw-bold">The following items are currently unavailable and remain in your cart:</p>
+            <ul>${remainingList}</ul>
+        `;
+
+        actionsBox.innerHTML = `
+            <a href="/member/cart/retrieve/all" class="btn btn-outline-dark btn-sm">View Cart</a>
+        `;
+    } else {
+        // Scenario 3: nothing available
+        alertBox.className = 'alert alert-danger';
+        alertBox.textContent = '❌ No Items Available';
+
+        detailsBox.innerHTML = `
+            <p class="text-center">None of the items in your cart are currently available. Your cart has not been changed.</p>
+        `;
+
+        actionsBox.innerHTML = `
+            <a href="/member/cart/retrieve/all" class="btn btn-outline-dark btn-sm">View Cart</a>
+        `;
+    }
+
+    resultPanel.style.display = 'block';
+}
+
 
 function escapeHTML(value) {
     if (!value) {

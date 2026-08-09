@@ -18,8 +18,12 @@
       <div class="container">
         <a class="navbar-brand" href="#">Restaurant Ordering System</a>
         <div class="navbar-nav ms-auto align-items-center">
-          <a href="/member/cart/retrieve/all" class="btn btn-outline-light btn-sm me-2">🛒 Cart</a>
           <span class="navbar-text me-3">Welcome, Member</span>
+          <a
+            href="/member/cart/retrieve/all"
+            class="btn btn-outline-light btn-sm me-2"
+            >🛒 Cart</a
+          >
           <a href="/logout" class="btn btn-outline-light btn-sm">Logout</a>
         </div>
       </div>
@@ -27,29 +31,42 @@
 
     <main class="container mt-4">
       <div class="mb-3">
-        <a href="/member/cart/retrieve/all" class="btn btn-outline-secondary btn-sm">
+        <a
+          href="/member/cart/retrieve/all"
+          class="btn btn-outline-secondary btn-sm"
+        >
           ← Back to Cart
         </a>
       </div>
 
-      <div id="error-message" class="alert alert-danger" style="display: none"></div>
-      <div id="success-message" class="alert alert-success" style="display: none"></div>
+      <div
+        id="error-message"
+        class="alert alert-danger"
+        style="display: none"
+      ></div>
+      <div
+        id="success-message"
+        class="alert alert-success"
+        style="display: none"
+      ></div>
 
-      <div class="card mx-auto" style="max-width: 500px;">
+      <div class="card mx-auto" style="max-width: 500px">
         <div class="card-body">
           <h4 class="card-title text-center mb-4">Checkout</h4>
 
-          <p id="loading-message" class="text-center">Loading checkout summary...</p>
+          <p id="loading-message" class="text-center">
+            Loading checkout summary...
+          </p>
 
           <div id="checkout-content" style="display: none">
             <!-- Order items -->
             <div id="checkout-items"></div>
 
-            <hr>
+            <hr />
 
             <!-- Price breakdown -->
             <div class="d-flex justify-content-between mb-2">
-              <span>Subtotal</span>
+              <span>Order Value</span>
               <span id="checkout-subtotal">$0.00</span>
             </div>
 
@@ -60,16 +77,50 @@
               <span id="checkout-delivery-fee">$0.00</span>
             </div>
 
-            <hr>
+            <hr />
 
             <div class="d-flex justify-content-between mb-4 fw-bold fs-5">
               <span>Total</span>
               <span id="checkout-total">$0.00</span>
             </div>
 
-            <div class="text-end">
-              <button id="placeOrderBtn" class="btn btn-dark">Place Order</button>
+            <!-- Delivery Address - placed after Total, before Place Order -->
+            <div class="mb-3">
+              <label for="deliveryAddress" class="form-label fw-bold"
+                >Delivery Address</label
+              >
+              <p class="text-muted small mb-2">
+                Please fill in your address before placing order.
+              </p>
+              <input
+                type="text"
+                id="deliveryAddress"
+                class="form-control"
+                placeholder="e.g. 123 Main Street, #12-34"
+                maxlength="255"
+              />
+              <div
+                id="address-error"
+                class="text-danger small mt-1"
+                style="display: none"
+              ></div>
             </div>
+
+            <div class="text-end">
+              <button id="placeOrderBtn" class="btn btn-dark">
+                Place Order
+              </button>
+            </div>
+          </div>
+
+          <!-- Order result panel - shown after Place Order completes, replacing checkout-content -->
+          <div id="order-result" style="display: none">
+            <div id="order-result-alert" class="alert" role="alert"></div>
+            <div id="order-result-details" class="mb-3"></div>
+            <div
+              id="order-result-actions"
+              class="d-flex gap-2 justify-content-center"
+            ></div>
           </div>
         </div>
       </div>

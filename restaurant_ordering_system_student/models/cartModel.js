@@ -6,6 +6,7 @@ const {
   PRISMA_ERROR_CODE,
 } = require("../errors");
 const prisma = new PrismaClient();
+const pool = require('../config/database');
 
 module.exports.createCartItems = function createCartItems(
   memberId,
@@ -426,4 +427,59 @@ module.exports.calculateCheckout = function calculateCheckout(memberId) {
         "Something went wrong while calculating checkout. Please try again.",
       );
     });
+};
+
+
+module.exports.placeOrder = function placeOrder(memberId, deliveryAddress) {
+    memberId = parseInt(memberId);
+
+    // Capture cart contents BEFORE calling the procedure, so we know
+    // exactly which items were in the cart going into this attempt.
+    return module.exports.getCartItems(memberId)
+        .then(function (cartItemsBefore) {
+            return pool.query(
+                'CALL place_orders($1, $2, NULL, NULL)',
+                [memberId, deliveryAddress]
+            )
+                .then(function (result) {
+                    const row = result.rows[0];
+
+                    return {
+                        orderId: row.p_order_id,
+                        itemsProcessed: row.p_items_processed,
+                        cartItemsBefore: cartItemsBefore,
+                    };
+                });
+        })
+        .then(function (orderResult) {
+            return module.exports.getCartItems(memberId)
+                .then(function (remainingItems) {
+                    const remainingProductIds = remainingItems.map(function (item) {
+                        return item.productId;
+                    });
+
+                    const itemsPlaced = orderResult.cartItemsBefore.filter(function (item) {
+                        return !remainingProductIds.includes(item.productId);
+                    });
+
+                    return {
+                        orderId: orderResult.orderId,
+                        itemsProcessed: orderResult.itemsProcessed,
+                        itemsPlaced: itemsPlaced.map(function (item) {
+                            return {
+                                productName: item.productName,
+                                quantity: item.quantity,
+                                subTotalPrice: item.subTotalPrice,
+                            };
+                        }),
+                        itemsRemaining: remainingItems.map(function (item) {
+                            return item.productName;
+                        }),
+                    };
+                });
+        })
+        .catch(function (error) {
+            console.error(error);
+            throw new Error('Something went wrong while placing your order. Please try again.');
+        });
 };

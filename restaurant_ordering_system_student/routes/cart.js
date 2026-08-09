@@ -23,4 +23,6 @@ router.get('/summary', ensureAuthenticated, cartController.retrieveCartSummary);
 
 // GET /cart/checkout - retrieves the full checkout breakdown (order items, discounts, delivery, total)
 router.get('/checkout', ensureAuthenticated, cartController.retrieveCheckoutSummary);
+
+router.post('/place-order', ensureAuthenticated, cartController.submitPlaceOrder);
 module.exports = router;
