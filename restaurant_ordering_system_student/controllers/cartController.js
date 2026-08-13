@@ -1,5 +1,5 @@
 const cartModel = require("../models/cartModel");
-const { INVALID_REFERENCE_ERROR } = require("../errors");
+const { EMPTY_RESULT_ERROR, INVALID_REFERENCE_ERROR } = require("../errors");
 
 module.exports.createCartItem = function (req, res) {
   const memberId = req.user.user_id;

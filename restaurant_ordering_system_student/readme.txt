@@ -182,3 +182,100 @@ The member ID used for feedback and response operations is taken from the authen
 The feedback and response API routes use `ensureAuthenticated` so only logged-in users can access them.
 
 The dashboard API route uses authentication and admin middleware, while the `get_sale_order_summary` database function also validates admin access at the database level.
+
+
+## CA2 Features Implemented
+
+Building on the CA1 codebase, the following features were added for CA2:
+
+### Database Setup — Additional Notes for CA2
+
+CA2 integrates Prisma ORM and requires setup steps beyond the CA1 SQL backup import above:
+
+1. Run `npx prisma generate` to generate the Prisma client.
+2. Run `npx prisma migrate dev` (or apply the provided migration) to create the new `cart`, `cart_item`, and `discount` tables on top of the existing schema.
+3. A separate `manufacturer` database is used for Section 5 (Indexing) — restore its backup separately; it is not integrated into the application.
+4. **Note on restoring from seed data:** if `sale_order` or `sale_order_item` rows are restored with explicit primary key values, the underlying auto-increment sequence can fall out of sync with the actual max ID in each table, causing `duplicate key value violates unique constraint` errors when `place_orders` is called. If this occurs, run:
+```sql
+   SELECT setval('public.sale_order_order_id_seq', (SELECT MAX(order_id) FROM sale_order));
+   SELECT setval('public.sale_order_item_order_item_id_seq', (SELECT MAX(order_item_id) FROM sale_order_item));
+```
+
+### Cart Management Feature
+
+Members can manage their own shopping cart, implemented via Prisma ORM.
+
+Functionally, a member can:
+
+* Add items to cart (auto-creates a cart on first add, via upsert)
+* Update the quantity of an item in the cart
+* Remove an item from the cart
+* Retrieve all items in the cart, and view a cart summary (total quantity, total checkout price)
+
+Validation includes:
+
+* Product ID must reference a valid, existing product
+* Quantity must be greater than 0
+* Adding a product already in the cart increments its existing quantity rather than creating a duplicate row
+* A member can only access, update, or delete items in their own cart — never another member's, even with a known/guessed cart item ID
+
+### Checkout Feature
+
+Members can proceed from their cart to a checkout page showing applicable discounts and the delivery fee before placing an order.
+
+Discounts supported:
+
+* Product-quantity discounts (e.g. "Buy 3 X get 10% off")
+* Cart-value discounts (e.g. "Spend $100 get 5% off")
+* Tiered delivery fees based on cart value
+
+All active discounts are evaluated simultaneously against the cart's original order value, and both met and unmet discounts are shown, with unmet discounts displaying an actionable message (e.g. "Add 2 more X to qualify"). New discount rules can be added directly via data (`INSERT`) with no code changes.
+
+### Transaction Management Feature
+
+At the end of checkout, a member can place an order via the `place_orders` stored procedure, which processes each cart item individually:
+
+* Available items are converted into a sale order and sale order item, and removed from the cart
+* Unavailable items are skipped and remain in the cart, without rolling back items already processed
+* If no items are available, no sale order is created
+
+### Manufacturer Table Indexing (Section 5)
+
+Six queries against the `manufacturer` table were optimized using various index types (single-column B-tree, composite, function-based, and covering indexes), with `EXPLAIN ANALYZE` evidence of performance improvement documented in the CA2 report. This is documentation-only; the `manufacturer` table is not integrated into the application.
+
+## Important Files — CA2 Additions
+
+### Cart and Checkout Pages
+
+* `views/cart/create.html`
+* `views/cart/retrieve-all.html`
+* `views/cart/checkout.html`
+
+### Frontend JavaScript
+
+* `public/js/cart-retrieve.js`
+* `public/js/cart-create.js`
+* `public/js/checkout.js`
+
+### Backend Files
+
+* `routes/cart.js`
+* `controllers/cartController.js`
+* `models/cartModel.js`
+
+### Database
+
+* `prisma/schema.prisma` — new `cart`, `cart_item`, `discount` models
+* `functions_and_stored_procedures.sql` — includes `place_orders`
+
+## CA2 Testing
+
+Testing was done using the application interface, Postman, and pgAdmin.
+
+Examples of tests performed:
+
+* Cart CRUD: add item (including duplicate-add increments quantity), update quantity, delete item, retrieve items and summary
+* Ownership scoping: updating or deleting another member's cart item returns "Cart item not found" rather than succeeding or exposing existence
+* Checkout: multiple discount types evaluated and displayed simultaneously; unmet discounts show actionable messaging; delivery fee steps correctly across tier boundaries
+* Extensibility: new discount rules (same type, different product) added purely via `INSERT`, applied correctly with no code changes
+* Transaction: full-success, partial-success, and zero-availability scenarios for `place_orders`, each verified against both the application UI and pgAdmin
